@@ -1,0 +1,34 @@
+version: '1.0.0'
+
+services:
+  dockerfile_demo:
+    build: dockerfile_demo
+    container_name: dockerfile_demo_${CONTAINER_VERSION}
+    ports:
+      - '8080:3000'
+#    volumes:
+#      - ./dockerfile_demo:/dockerfile_demo
+    volumes:
+      - type: volume
+        source: dockerfile_demo
+        target: /dockerfile_demo
+    links:
+      - redis
+      - web
+    env_file:
+      - ./dockerfile_demo/.env.docker
+      - ./.env
+  web:
+    build: composetest
+    ports:
+      - "8000:5000"
+    volumes:
+      - ./composetest:/composetest
+    environment:
+      FLASK_ENV: development
+    links:
+      - redis
+  redis:
+    image: "redis:alpine"
+volumes:
+  dockerfile_demo:
